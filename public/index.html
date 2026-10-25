@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Book football turfs across Mumbai. Find available slots, manage bookings, and connect with players. From Virar to Bandra.">
+  <title>TurfBook — Book Football Turfs & Find Players</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ═══ NAVBAR ═══ -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#home" class="nav-logo">
+        <span class="logo-icon">&#9917;</span>
+        <span><span class="logo-text">TURF</span><span class="logo-accent">BOOK</span></span>
+      </a>
+
+      <button class="nav-toggle" onclick="toggleMobileNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="nav-links" id="nav-links">
+        <a class="nav-link active" data-page="home" href="#home">Home</a>
+        <a class="nav-link" data-page="book" href="#book">Book Turf</a>
+        <a class="nav-link" data-page="players" href="#players">Find Players</a>
+      </div>
+
+      <!-- Logged out -->
+      <div class="nav-actions" id="nav-actions">
+        <button class="btn btn-outline btn-sm" onclick="showAuthModal('login')">Log In</button>
+        <button class="btn btn-primary btn-sm" onclick="showAuthModal('signup')">Sign Up</button>
+      </div>
+
+      <!-- Logged in -->
+      <div class="nav-user" id="nav-user" style="display:none;">
+        <div class="notification-bell" onclick="toggleNotifications()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-badge" id="notif-badge" style="display:none;">0</span>
+        </div>
+
+        <div class="user-menu" onclick="toggleUserMenu()">
+          <div class="user-avatar" id="user-avatar">U</div>
+          <span class="user-name" id="user-name">User</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+
+        <div class="user-dropdown" id="user-dropdown">
+          <a class="dropdown-item" id="dropdown-dashboard" onclick="window.location.hash='dashboard'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </a>
+          <a class="dropdown-item" onclick="window.location.hash='my-bookings'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            My Bookings
+          </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item text-danger" onclick="logout()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Log Out
+          </a>
+        </div>
+      </div>
+
+      <!-- Notifications Panel -->
+      <div class="notifications-panel" id="notifications-panel">
+        <div class="notif-header">
+          <h3>Notifications</h3>
+          <button class="btn-text" onclick="markAllRead()">Mark all read</button>
+        </div>
+        <div class="notif-list" id="notif-list">
+          <div class="notif-empty">No notifications yet</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PAGE: HOME
+       ═══════════════════════════════════════════════════════ -->
+  <div class="page" id="page-home">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-bg">
+        <div class="hero-gradient"></div>
+        <!-- Floating pitch markers -->
+        <div class="floating-elements">
+          <div class="float-ball" style="--x:15%;--y:20%;--delay:0s;"></div>
+          <div class="float-ball" style="--x:80%;--y:30%;--delay:1s;"></div>
+          <div class="float-ball" style="--x:70%;--y:70%;--delay:2s;"></div>
+          <div class="float-ball" style="--x:25%;--y:75%;--delay:3s;"></div>
+          <div class="float-ball" style="--x:90%;--y:55%;--delay:1.5s;"></div>
+          <div class="float-ball" style="--x:50%;--y:15%;--delay:2.5s;"></div>
+        </div>
+      </div>
+
+      <div class="hero-content">
+        <div class="hero-badge">#1 Turf Platform in Mumbai</div>
+        <h1 class="hero-title">
+          BOOK YOUR<br>
+          <span class="text-gradient">PERFECT PITCH</span>
+        </h1>
+        <p class="hero-subtitle">
+          Find &amp; book football turfs, connect with players, and never miss a game. From Virar to Bandra — your pitch awaits.
+        </p>
+        <div class="hero-cta">
+          <a href="#book" class="btn btn-primary btn-lg">Find a Turf</a>
+          <a href="#players" class="btn btn-glass btn-lg">Find Players</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-value">6+</span>
+            <span class="stat-label">Turfs Listed</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-value">420+</span>
+            <span class="stat-label">Slots Available</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-value">6</span>
+            <span class="stat-label">Areas Covered</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features-section">
+      <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">Three roles, one platform</p>
+        <div class="features-grid">
+          <div class="feature-card" data-num="01">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            </div>
+            <h3>For Turf Owners</h3>
+            <p>List your turf, manage time slots, and receive instant booking notifications. Full control over your business.</p>
+          </div>
+          <div class="feature-card" data-num="02">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <h3>For Players</h3>
+            <p>Search by location, pick a date, and book available slots instantly. From Virar to Bandra — all turfs at your fingertips.</p>
+          </div>
+          <div class="feature-card" data-num="03">
+            <div class="feature-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <h3>Find Teammates</h3>
+            <p>Need more players? Post your game and let others join. Build your squad and never play short-handed again.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- POPULAR TURFS -->
+    <section class="popular-section">
+      <div class="container">
+        <h2 class="section-title">Popular Turfs</h2>
+        <p class="section-subtitle">Top-rated turfs across Mumbai</p>
+        <div class="turf-grid" id="home-turf-grid">
+          <!-- JS fills this -->
+        </div>
+        <div class="section-cta">
+          <a href="#book" class="btn btn-outline">View All Turfs &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <div class="logo-text">TURF<span class="logo-accent">BOOK</span></div>
+            <p>The ultimate football turf booking platform. Find turfs, book slots, and connect with players across Mumbai.</p>
+          </div>
+          <div class="footer-links">
+            <h4>Quick Links</h4>
+            <a href="#home">Home</a>
+            <a href="#book">Book Turf</a>
+            <a href="#players">Find Players</a>
+          </div>
+          <div class="footer-links">
+            <h4>Areas</h4>
+            <a href="#" onclick="navigateToArea('Virar-W')">Virar West</a>
+            <a href="#" onclick="navigateToArea('Andheri-W')">Andheri West</a>
+            <a href="#" onclick="navigateToArea('Borivali-W')">Borivali West</a>
+            <a href="#" onclick="navigateToArea('Thane')">Thane</a>
+            <a href="#" onclick="navigateToArea('Bandra-W')">Bandra West</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2026 TurfBook. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PAGE: BOOK TURF
+       ═══════════════════════════════════════════════════════ -->
+  <div class="page" id="page-book" style="display:none;">
+    <div class="page-header">
+      <div class="container">
+        <h1 class="page-title">Book a Turf</h1>
+        <p class="page-subtitle">Find your pitch, pick your slot, play</p>
+      </div>
+    </div>
+    <div class="container" style="padding-top:32px;padding-bottom:80px;">
+      <!-- Filters -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label>City</label>
+          <select id="filter-city" onchange="onCityChange()">
+            <option value="">All Cities</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Area</label>
+          <select id="filter-area" onchange="onAreaChange()">
+            <option value="">All Areas</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Search</label>
+          <input type="text" id="filter-search" placeholder="Search turfs..." oninput="debounceSearch()">
+        </div>
+      </div>
+
+      <!-- Turf Grid -->
+      <div class="turf-grid" id="book-turf-grid">
+        <!-- JS fills this -->
+      </div>
+      <div class="empty-state" id="no-turfs" style="display:none;">
+        <div class="empty-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <h3>No turfs found</h3>
+        <p>Try adjusting your filters or search terms</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PAGE: TURF DETAIL
+       ═══════════════════════════════════════════════════════ -->
+  <div class="page" id="page-turf-detail" style="display:none;">
+    <div class="page-header">
+      <div class="container">
+        <button class="btn-back" onclick="window.location.hash='book'">&larr; Back to turfs</button>
+        <h1 class="page-title" id="turf-detail-name">Turf Name</h1>
+        <p class="page-subtitle" id="turf-detail-location">City / Area</p>
+      </div>
+    </div>
+    <div class="container" style="padding-top:32px;">
+      <div class="turf-detail-grid">
+        <!-- Left: Info -->
+        <div class="detail-card">
+          <h3>Details</h3>
+          <p id="turf-detail-desc">Description</p>
+          <div class="detail-meta">
+            <div class="meta-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span id="turf-detail-address">Address</span>
+            </div>
+            <div class="meta-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <span id="turf-detail-price">Price</span>
+            </div>
+            <div class="meta-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span id="turf-detail-owner">Owner</span>
+            </div>
+          </div>
+          <div class="amenities-list" id="turf-detail-amenities"></div>
+        </div>
+
+        <!-- Right: Slots -->
+        <div class="detail-card">
+          <h3>Available Slots</h3>
+          <div class="date-picker-row">
+            <label>Select Date</label>
+            <input type="date" id="slot-date-picker" onchange="loadSlotsForDate()">
+          </div>
+          <div class="slots-grid" id="slots-grid">
+            <!-- JS fills -->
+          </div>
+          <div class="empty-state" id="no-slots" style="display:none;">
+            <div class="empty-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+            </div>
+            <h3>No slots available</h3>
+            <p>Try a different date or check back later</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PAGE: FIND PLAYERS
+       ═══════════════════════════════════════════════════════ -->
+  <div class="page" id="page-players" style="display:none;">
+    <div class="page-header">
+      <div class="container">
+        <h1 class="page-title">Find Players</h1>
+        <p class="page-subtitle">Join a game or post your own</p>
+      </div>
+    </div>
+    <div class="container" style="padding-top:32px;padding-bottom:80px;">
+      <div class="players-actions">
+        <div class="inline-filter">
+          <select id="games-filter-city" onchange="loadGames()">
+            <option value="">All Cities</option>
+          </select>
+          <select id="games-filter-area" onchange="loadGames()">
+            <option value="">All Areas</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="showPostGameModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Post a Game
+        </button>
+      </div>
+
+      <div class="games-grid" id="games-grid">
+        <!-- JS fills -->
+      </div>
+      <div class="empty-state" id="no-games" style="display:none;">
+        <div class="empty-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+        <h3>No games posted</h3>
+        <p>Be the first to post a game and find teammates</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PAGE: DASHBOARD
+       ═══════════════════════════════════════════════════════ -->
+  <div class="page" id="page-dashboard" style="display:none;">
+    <div class="page-header">
+      <div class="container">
+        <h1 class="page-title" id="dashboard-title">Dashboard</h1>
+        <p class="page-subtitle" id="dashboard-subtitle">Manage your account</p>
+      </div>
+    </div>
+    <div class="container" style="padding-top:32px;padding-bottom:80px;">
+
+      <!-- Owner Dashboard -->
+      <div id="owner-dashboard" style="display:none;">
+        <div class="dashboard-tabs">
+          <button class="dash-tab active" data-tab="turfs" onclick="switchDashTab(this)">My Turfs</button>
+          <button class="dash-tab" data-tab="owner-bookings" onclick="switchDashTab(this)">Booking Requests</button>
+        </div>
+
+        <!-- My Turfs Panel -->
+        <div class="dash-panel" id="panel-turfs">
+          <div class="panel-header">
+            <h3>My Turfs</h3>
+            <button class="btn btn-primary btn-sm" onclick="showAddTurfModal()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Turf
+            </button>
+          </div>
+          <div id="owner-turfs-list"></div>
+        </div>
+
+        <!-- Owner Bookings Panel -->
+        <div class="dash-panel" id="panel-owner-bookings" style="display:none;">
+          <div class="panel-header"><h3>Booking Requests</h3></div>
+          <div id="owner-bookings-list" class="bookings-list"></div>
+        </div>
+      </div>
+
+      <!-- Client Dashboard -->
+      <div id="client-dashboard" style="display:none;">
+        <div id="client-bookings-list" class="bookings-list"></div>
+      </div>
+
+      <!-- Player Dashboard -->
+      <div id="player-dashboard" style="display:none;">
+        <div class="dashboard-tabs">
+          <button class="dash-tab active" data-tab="my-created" onclick="switchDashTab(this)">Games I Created</button>
+          <button class="dash-tab" data-tab="my-joined" onclick="switchDashTab(this)">Games I Joined</button>
+        </div>
+        <div class="dash-panel" id="panel-my-created">
+          <div id="my-created-games"></div>
+        </div>
+        <div class="dash-panel" id="panel-my-joined" style="display:none;">
+          <div id="my-joined-games"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PAGE: MY BOOKINGS
+       ═══════════════════════════════════════════════════════ -->
+  <div class="page" id="page-my-bookings" style="display:none;">
+    <div class="page-header">
+      <div class="container">
+        <h1 class="page-title">My Bookings</h1>
+        <p class="page-subtitle">Your turf reservations</p>
+      </div>
+    </div>
+    <div class="container" style="padding-top:32px;padding-bottom:80px;">
+      <div id="all-bookings-list" class="bookings-list"></div>
+      <div class="empty-state" id="no-bookings" style="display:none;">
+        <div class="empty-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+        </div>
+        <h3>No bookings yet</h3>
+        <p>Find a turf and book your first game!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       MODALS
+       ═══════════════════════════════════════════════════════ -->
+
+  <!-- Auth Modal -->
+  <div class="modal-overlay" id="auth-modal" style="display:none;">
+    <div class="modal">
+      <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Log In</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- Login -->
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="auth-error" id="login-error"></div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="Enter password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Log In</button>
+        <div class="auth-demo">
+          <p>Quick demo access</p>
+          <button type="button" class="btn-chip" onclick="fillDemo('owner')">Owner</button>
+          <button type="button" class="btn-chip" onclick="fillDemo('client')">Client</button>
+          <button type="button" class="btn-chip" onclick="fillDemo('player')">Player</button>
+        </div>
+      </form>
+
+      <!-- Signup -->
+      <form id="signup-form" style="display:none;" onsubmit="handleSignup(event)">
+        <div class="auth-error" id="signup-error"></div>
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="signup-name" placeholder="Your full name" required>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="signup-email" placeholder="your@email.com" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" id="signup-phone" placeholder="Phone number" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="signup-password" placeholder="Create password" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Select Your Role</label>
+          <div class="role-selector">
+            <label class="role-card">
+              <input type="radio" name="signup-role" value="owner">
+              <div class="role-card-inner">
+                <span class="role-icon">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                </span>
+                <span class="role-label">Owner</span>
+                <span class="role-desc">List & manage turfs</span>
+              </div>
+            </label>
+            <label class="role-card">
+              <input type="radio" name="signup-role" value="client">
+              <div class="role-card-inner">
+                <span class="role-icon">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </span>
+                <span class="role-label">Client</span>
+                <span class="role-desc">Search & book turfs</span>
+              </div>
+            </label>
+            <label class="role-card">
+              <input type="radio" name="signup-role" value="player">
+              <div class="role-card-inner">
+                <span class="role-icon">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                </span>
+                <span class="role-label">Player</span>
+                <span class="role-desc">Find games & teammates</span>
+              </div>
+            </label>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Booking Modal -->
+  <div class="modal-overlay" id="booking-modal" style="display:none;">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('booking-modal')">&times;</button>
+      <div class="modal-title">Confirm Booking</div>
+      <div class="modal-subtitle">Review your booking details</div>
+
+      <div class="booking-summary" id="booking-summary"></div>
+
+      <form onsubmit="handleBooking(event)">
+        <div class="form-group">
+          <label>Notes (Optional)</label>
+          <textarea id="booking-notes" rows="3" placeholder="Any special requirements..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full btn-lg">Confirm &amp; Book</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Turf Modal -->
+  <div class="modal-overlay" id="add-turf-modal" style="display:none;">
+    <div class="modal modal-lg">
+      <button class="modal-close" onclick="closeModal('add-turf-modal')">&times;</button>
+      <div class="modal-title">Add New Turf</div>
+      <div class="modal-subtitle">List your turf on the platform</div>
+
+      <form id="add-turf-form" onsubmit="handleAddTurf(event)">
+        <div class="form-group">
+          <label>Turf Name</label>
+          <input type="text" id="turf-name" placeholder="e.g. Legends Turf" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" id="turf-city" placeholder="e.g. Mumbai" required>
+          </div>
+          <div class="form-group">
+            <label>Area</label>
+            <input type="text" id="turf-area" placeholder="e.g. Virar-W" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Address</label>
+          <input type="text" id="turf-address" placeholder="Full address" required>
+        </div>
+        <div class="form-group">
+          <label>Price Per Hour (INR)</label>
+          <input type="number" id="turf-price" placeholder="e.g. 800" min="100" required>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="turf-desc" rows="3" placeholder="Describe your turf..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Amenities</label>
+          <div class="amenities-checkboxes" id="amenities-checkboxes">
+            <label class="checkbox-label"><input type="checkbox" value="Floodlights"> Floodlights</label>
+            <label class="checkbox-label"><input type="checkbox" value="Parking"> Parking</label>
+            <label class="checkbox-label"><input type="checkbox" value="Changing Room"> Changing Room</label>
+            <label class="checkbox-label"><input type="checkbox" value="Shower"> Shower</label>
+            <label class="checkbox-label"><input type="checkbox" value="Drinking Water"> Water</label>
+            <label class="checkbox-label"><input type="checkbox" value="Cafeteria"> Cafeteria</label>
+            <label class="checkbox-label"><input type="checkbox" value="First Aid"> First Aid</label>
+            <label class="checkbox-label"><input type="checkbox" value="Equipment Rental"> Equipment</label>
+            <label class="checkbox-label"><input type="checkbox" value="Lounge"> Lounge</label>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full btn-lg">Add Turf</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Slots Modal -->
+  <div class="modal-overlay" id="add-slots-modal" style="display:none;">
+    <div class="modal modal-lg">
+      <button class="modal-close" onclick="closeModal('add-slots-modal')">&times;</button>
+      <div class="modal-title">Add Slots <span id="add-slots-turf-name" class="text-green"></span></div>
+      <div class="modal-subtitle">Select date and time slots to make available</div>
+
+      <form id="add-slots-form" onsubmit="handleAddSlots(event)">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="slot-date" required>
+        </div>
+        <div class="form-group">
+          <label>Select Time Slots</label>
+          <div class="time-slots-grid" id="time-slots-grid">
+            <!-- JS fills -->
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full btn-lg">Add Slots</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Post Game Modal -->
+  <div class="modal-overlay" id="post-game-modal" style="display:none;">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('post-game-modal')">&times;</button>
+      <div class="modal-title">Post a Game</div>
+      <div class="modal-subtitle">Find teammates for your match</div>
+
+      <form id="post-game-form" onsubmit="handlePostGame(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" id="game-city" placeholder="e.g. Mumbai" required>
+          </div>
+          <div class="form-group">
+            <label>Area</label>
+            <input type="text" id="game-area" placeholder="e.g. Virar-W" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Turf / Venue</label>
+          <input type="text" id="game-turf" placeholder="Where are you playing?" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="game-date" required>
+          </div>
+          <div class="form-group">
+            <label>Time</label>
+            <input type="time" id="game-time" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Players Needed</label>
+          <input type="number" id="game-players" min="1" max="22" placeholder="How many?" required>
+        </div>
+        <div class="form-group">
+          <label>Description (Optional)</label>
+          <textarea id="game-desc" rows="3" placeholder="Skill level, game type, etc..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full btn-lg">Post Game</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
